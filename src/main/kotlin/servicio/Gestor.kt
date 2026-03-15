@@ -25,7 +25,7 @@ class Gestor(val io: Consola, val reservaService: ReservaService) {
     private fun solicitarHoraVuelo(): String {
         do {
             val horaVuelo = readln()
-            val formato = """[0-2][0-9]:[0-6][0-9]""".toRegex()
+            val formato = """^([01][0-9]|2[0-3]):[0-5][0-9]$""".toRegex()
             if (formato.matches(horaVuelo)) {
                 return horaVuelo
             }
