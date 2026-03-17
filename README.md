@@ -229,6 +229,64 @@ class ReservaHotel private constructor(
 #### **Criterio global 5: Herencia y uso de clases abstractas e interfaces**
 - **(4.g, 7.a, 7.b, 7.c, 7.i, 7.j)**: Describe sobre tu código cómo has implementado la herencia y/o utilizado interfaces en tu proyecto. ¿Por qué elegiste este enfoque y cómo beneficia a la estructura de tu aplicación? ¿De qué manera has utilizado los principios SOLID para mejorar el diseño de tu proyecto? Mostrando tu código, contesta qué principios has utilizado y qué beneficio has obtenido.
 
+He implementado una clase abstracta Reserva.
+
+Por qué: Reserva define el "que" (una reserva tiene ID, fecha y descripción), pero no el "cómo" se detalla, ya que un hotel y un vuelo se muestran de forma distinta.
+
+SOLID: 
+
+- Principio de responsabilidad unica: Consola solo se encarga de imprimir.
+
+- Open/Closed: El sistema está abierto a nuevas reservas (por ejemplo, ReservaPiso) sin modificar la clase Reserva
+
+```kotlin
+abstract class Reserva {
+    companion object {
+        private var contador = 0
+        private val formato = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+        private fun getNuevoid(): Int {
+            contador += 1
+            return contador
+        }
+
+        private fun getFecha(): String {
+            return LocalDateTime.now().format(formato)
+        }
+    }
+
+    val id: Int = getNuevoid()
+    val fechaCreacion = getFecha()
+    abstract val descripcion: String
+    abstract val detalle: String
+
+    override fun toString(): String {
+        return "$detalle Extra -> $fechaCreacion"
+    }
+}
+
+class ReservaVuelo private constructor(
+    override val descripcion: String,
+    val origen: String,
+    val destino: String,
+    val horaVuelo: String
+): Reserva() {
+    companion object{
+        fun crearInstancia(
+            descripcion: String,
+            origen: String,
+            destino: String,
+            horaVuelo: String
+        ): ReservaVuelo {
+            return ReservaVuelo(descripcion, origen, destino, horaVuelo)
+        }
+    }
+
+    override val detalle: String
+        get() = "$id - $descripcion - $origen -> $destino [$horaVuelo]"
+}
+```
+
 #### **Criterio global 6: Diseño de jerarquía de clases**
 - **(7.d, 7.e, 7.f, 7.g)**: Presenta la jerarquía de clases que diseñaste. ¿Cómo probaste y depuraste esta jerarquía para asegurar su correcto funcionamiento? ¿Qué tipo de herencia has utilizado: Especificación, Especialización, Extensión, Construcción?
 
