@@ -139,15 +139,92 @@ Este conjunto de preguntas está diseñado para ayudarte a reflexionar sobre có
 #### **Criterio global 1: Instancia objetos y hacer uso de ellos**
 - **(2.a, 2.b, 2.c, 2.d, 2.f, 2.h, 4.e, 4.f)**: Describe cómo has instanciado y utilizado objetos en tu proyecto. ¿Cómo has aplicado los constructores y pasado parámetros a los métodos? Proporciona ejemplos específicos de tu código.
 
+En este proyecto, la instanciación de objetos se realiza principalmente a través de los companion objects.
+
+- Constructores y parámetros: He definido los constructores de ReservaHotel y ReservaVuelo como privados. Esto obliga al usuario de la clase a utilizar el método crearInstancia.
+
+```kotlin
+class ReservaHotel private constructor(
+    override val descripcion: String,
+    val ubicacion: String,
+    val numeroNoches: Int,
+): Reserva() {
+    companion object {
+        fun crearInstancia(
+            descripcion: String,
+            ubicacion: String,
+            numeroNoches: Int,
+        ): ReservaHotel {
+            return ReservaHotel(descripcion, ubicacion, numeroNoches)
+        }
+    }
+
+    override val detalle: String
+        get() = "$id - $descripcion - $ubicacion ($numeroNoches)"
+}
+```
+
 #### **Criterio global 2: Crear y llamar métodos estáticos**
 - **(4.h)**: ¿Has definido algún método/propiedad estático en tu proyecto? ¿Cuál era el objetivo y por qué consideraste que debía ser estático en lugar de un método/propiedad de instancia?
 - **(2.e)**: ¿En qué parte del código se llama a un método estático o se utiliza la propiedad estática?
 
+Si, en el companion object.
+
+- Objetivo: Se usa para gestionar datos compartidos por todas las instancias, como el contador de ID y el formateador de fechas.
+
+- Por qué estático: El contador debe ser estático para que cada nueva reserva reciba un ID nuevo.
+
+- Uso: La propiedad id y fechaCreacion llaman a estos métodos estáticos (getNuevoid() y getFecha()) cuando se inicializa cualquier subclase.
+
+```kotlin
+abstract class Reserva {
+    companion object {
+        private var contador = 0
+        private val formato = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
+        private fun getNuevoid(): Int {
+            contador += 1
+            return contador
+        }
+
+        private fun getFecha(): String {
+            return LocalDateTime.now().format(formato)
+        }
+    }
+
+    val id: Int = getNuevoid()
+    val fechaCreacion = getFecha()
+    abstract val descripcion: String
+    abstract val detalle: String
+
+    override fun toString(): String {
+        return "$detalle Extra -> $fechaCreacion"
+    }
+}
+```
 #### **Criterio global 3: Uso de entornos**
 - **(2.i)**: ¿Cómo utilizaste el IDE para el desarrollo de tu proyecto? Describe el proceso de creación, compilación, y prueba de tu programa.
 
+Se utiliza IntelliJ IDEA.
+
+Se define la estructura en paquetes (dominio, datos, presentacion).
+
 #### **Criterio global 4: Definir clases y su contenido**
 - **(4.a, 4.b, 4.c, 4.d, 4.g)**: Explica sobre un ejemplo de tu código, cómo definiste las clases en tu proyecto, es decir como identificaste las de propiedades, métodos y constructores y modificadores del control de acceso a métodos y propiedades, para representar al objeto del mundo real. ¿Cómo contribuyen estas clases a la solución del problema que tu aplicación aborda?
+
+- Data Class (DatosHotel, DatosVuelo): Usadas para almacenar datos.
+
+Encapsulamiento: He utilizado el modificador private en los constructores de ReservaHotel y ReservaVuelo. Esto obliga a instanciarlo mediante crearInstancia() en el companion object.
+
+Propiedades: Hay propiedades comunes (como descripcion) y específicas (como ubicacion o origen).
+
+```kotlin
+class ReservaHotel private constructor(
+    override val descripcion: String,
+    val ubicacion: String,
+    val numeroNoches: Int,
+)
+```
 
 #### **Criterio global 5: Herencia y uso de clases abstractas e interfaces**
 - **(4.g, 7.a, 7.b, 7.c, 7.i, 7.j)**: Describe sobre tu código cómo has implementado la herencia y/o utilizado interfaces en tu proyecto. ¿Por qué elegiste este enfoque y cómo beneficia a la estructura de tu aplicación? ¿De qué manera has utilizado los principios SOLID para mejorar el diseño de tu proyecto? Mostrando tu código, contesta qué principios has utilizado y qué beneficio has obtenido.
