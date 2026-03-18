@@ -290,15 +290,60 @@ class ReservaVuelo private constructor(
 #### **Criterio global 6: Diseño de jerarquía de clases**
 - **(7.d, 7.e, 7.f, 7.g)**: Presenta la jerarquía de clases que diseñaste. ¿Cómo probaste y depuraste esta jerarquía para asegurar su correcto funcionamiento? ¿Qué tipo de herencia has utilizado: Especificación, Especialización, Extensión, Construcción?
 
+La jerarquía es Reserva (Base) -> ReservaHotel/ReservaVuelo (Derivadas).
+
+- Tipo de herencia: **Especialización**. Las subclases heredan la estructura base (ID, fecha) y especializan la propiedad detalle.
+
+- Depuración: Depuro con el método toString() en la clase base, que usa el polimorfismo para llamar al detalle de la hija.
+
 #### **Criterio global 7: Librerías de clases**
 - **(2.g, 4.i)**: Describe cualquier librería externa que hayas incorporado en tu proyecto. Explica cómo y por qué las elegiste, y cómo las incorporaste en tu proyecto. ¿Cómo extendió la funcionalidad de tu aplicación? Proporciona ejemplos específicos de su uso en tu proyecto.
+
+`java.time.LocalDateTime` y `java.time.format.DateTimeFormatter`.
+
+```kotlin
+private val formato = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+```
+
+Guarda automáticamente el momento en que fue creada con el formato deseado (dd-MM-yyyy).
 
 #### **Criterio global 8: Documentado**
 - **(7.h)**: Muestra ejemplos de cómo has documentado y comentado tu código. ¿Que herramientas has utilizado? ¿Cómo aseguras que tu documentación aporte valor para la comprensión, mantenimiento y depuración del código?
 
+Etiquetas: @property para describir los datos, como el id generado automáticamente y el formato de fechaCreacion.
+
+```kotlin
+/**
+ * Representa una reserva genérica.
+ *
+ * Esta clase es de tipo [abstract], por lo que no se puede instanciar directamente.
+ * Crea la estructura base de la clase para subclases de reservas como vuelos u hoteles.
+ *
+ * @property id Identificador único que se crea automáticamente.
+ * @property fechaCreacion Fecha en la que se registró la reserva en formato "dd-MM-yyyy".
+ */
+```
+
 #### **Criterio global 9: Genéricos**
 - **(6.f)**: Muestra ejemplos de tu código sobre cómo has implementado una clase con genéricos. ¿Qué beneficio has obtenido?
+
+No he usado Genéricos, ya que no he visto donde podian llegar a ser útiles en sistema "cerrado" como este (cerrado en el sentido de que no se espera ningun tipo mas allá de Reserva)
 
 #### **Criterio global 10: Expresiones Regulares**
 - **(6.g)**: Muestra ejemplos de tu código donde hayas utilizado las expresiones regulares. ¿Qué beneficio has obtenido?
 
+He usado expresiones regulares para validar el formato al introducir una hora, esto permite una validación fácil y cómoda.
+
+```kotlin
+private fun solicitarHoraVuelo(): String {
+        do {
+            val horaVuelo = readln()
+            val formato = """^([01][0-9]|2[0-3]):[0-5][0-9]$""".toRegex()
+            if (formato.matches(horaVuelo)) {
+                return horaVuelo
+            }
+            io.log("Formato de hora incorrecto, vuelve a intentarlo:")
+        } while (!formato.matches(horaVuelo))
+        return ""
+    }
+```
